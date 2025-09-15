@@ -53,6 +53,7 @@ function updateKmDisplay() {
 function clearData() {
   if (confirm("Сигурен ли си, че искаш да изтриеш всички данни?")) {
     localStorage.removeItem('maintenanceData'); // изтрива само нашите данни
+    localStorage.removeItem('currentKm');
     maintenanceData = JSON.parse(localStorage.getItem('maintenanceData')) || defaultData; // връща към default
     alert("Данните са изчистени.");
     location.reload();
@@ -120,12 +121,12 @@ let currentKm = parseInt(localStorage.getItem('currentKm')) || null;
 // Функция за въвеждане/обновяване на текущите км
 function updateCurrentKm() {
   const km = parseInt(prompt("Въведи текущи километри на колата:", currentKm || "0"));
-  if (!isNaN(km) && km > 0) {
+
     currentKm = km;
     localStorage.setItem('currentKm', currentKm);
     renderTable();
     updateKmDisplay();
-  }
+
 }
 
 // Функция за визуализиране на таблицата
@@ -134,10 +135,10 @@ function renderTable() {
   tbody.innerHTML = '';
 
   // Ако currentKm още не е въведен, поискаме от потребителя
-  if (currentKm === null) {
-    updateCurrentKm();
-    return;
-  }
+  // if (currentKm === null) {
+  //   updateCurrentKm();
+  //   return;
+  // }
 
   for (let part in maintenanceData) {
     const data = maintenanceData[part];
