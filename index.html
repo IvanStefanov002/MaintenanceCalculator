@@ -25,22 +25,54 @@
 </head>
 <body>
 
-<header>
-  <h1>Passat B8</h1>
+<header style="display: flex; justify-content: space-between; align-items: center; background: #004d99; color: white; padding: 1rem;">
+  <!-- Лява част -->
+  <div style="display: flex; flex-direction: column;">
+    <h1 style="margin: 0; color: lightgray; font-weight: 900;" >Passat B8</h1>
+    <h3 style="margin: 0; font-weight: 300;">пробег: <span id="currentKmDisplay" style="font-weight: 900;">0</span> км.</h3>
+  </div>
+
+  <!-- Дясна част -->
+  <div style="display: flex; gap: 0.5rem;">
+    <button onclick="updateCurrentKm()" style="background:#28a745; color:white; border:none; padding:0.5rem 1rem; border-radius:6px; cursor:pointer;">
+      Обнови км
+    </button>
+    <button onclick="clearData()" style="background:#ff0101; color:white; border:none; padding:0.5rem 1rem; border-radius:6px; cursor:pointer;">
+      Изчисти данни
+    </button>
+  </div>
 </header>
 
+<script>
+
+function updateKmDisplay() {
+  const km = localStorage.getItem('currentKm') || 0;
+  document.getElementById('currentKmDisplay').textContent = km;
+}
+
+function clearData() {
+  if (confirm("Сигурен ли си, че искаш да изтриеш всички данни?")) {
+    localStorage.removeItem('maintenanceData'); // изтрива само нашите данни
+    maintenanceData = JSON.parse(localStorage.getItem('maintenanceData')) || defaultData; // връща към default
+    alert("Данните са изчистени.");
+    location.reload();
+  }
+}
+</script>
+
 <main>
-  <form id="addForm">
+  <form id="addForm" style="display: flex; justify-content: space-between;">
     <select id="part">
       <option value="oil">Масло</option>
       <option value="airFilter">Въздушен филтър</option>
+      <option value="polenFilter">Поленов филтър</option>
       <option value="fuelFilter">Горивен филтър</option>
       <option value="timingBelt">Ангренажен комплект</option>
     </select>
-    <input type="number" id="lastKm" placeholder="Последни км" required>
-    <input type="number" id="intervalKm" placeholder="Интервал км" required>
+    <input type="number" id="lastKm" placeholder="Последни" required>
+    <input type="number" id="intervalKm" placeholder="Интервал" required>
     <input type="text" id="notes" placeholder="Бележки">
-    <button type="submit">Добави / Обнови</button>
+    <button type="submit" style="background-color: #28a745;">Добави / Обнови</button>
   </form>
 
   <table>
@@ -64,8 +96,9 @@
 const defaultData = {
   oil: { lastKm: 0, intervalKm: 10000, notes: '' },
   airFilter: { lastKm: 0, intervalKm: 20000, notes: '' },
+  polenFilter: { lastKm: 0, intervalKm: 20000, notes: '' },
   fuelFilter: { lastKm: 0, intervalKm: 30000, notes: '' },
-  timingBelt: { lastKm: 0, intervalKm: 150000, notes: '' }
+  timingBelt: { lastKm: 0, intervalKm: 210000, notes: '' }
 };
 
 let maintenanceData = JSON.parse(localStorage.getItem('maintenanceData')) || defaultData;
@@ -74,17 +107,37 @@ function mapKeyword(keyword) {
   const dictionary = {
     oil: "Масло",
     airFilter: "Въздушен филтър",
+    polenFilter: "Поленов филтър",
     fuelFilter: "Горивен филтър",
     timingBelt: "Ангренажен комплект"
   };
   return dictionary[keyword] || keyword;
 }
 
+// Глобална променлива за текущите км
+let currentKm = parseInt(localStorage.getItem('currentKm')) || null;
+
+// Функция за въвеждане/обновяване на текущите км
+function updateCurrentKm() {
+  const km = parseInt(prompt("Въведи текущи километри на колата:", currentKm || "0"));
+  if (!isNaN(km) && km > 0) {
+    currentKm = km;
+    localStorage.setItem('currentKm', currentKm);
+    renderTable();
+    updateKmDisplay();
+  }
+}
+
 // Функция за визуализиране на таблицата
 function renderTable() {
   const tbody = document.getElementById('maintenanceTable');
   tbody.innerHTML = '';
-  const currentKm = parseInt(prompt("Въведи текущи километри на колата:", "0")) || 0;
+
+  // Ако currentKm още не е въведен, поискаме от потребителя
+  if (currentKm === null) {
+    updateCurrentKm();
+    return;
+  }
 
   for (let part in maintenanceData) {
     const data = maintenanceData[part];
@@ -127,10 +180,12 @@ document.getElementById('addForm').addEventListener('submit', e => {
   maintenanceData[part] = { lastKm, intervalKm, notes };
   localStorage.setItem('maintenanceData', JSON.stringify(maintenanceData));
   renderTable();
+  updateKmDisplay();
   e.target.reset();
 });
 
 renderTable();
+updateKmDisplay();
 </script>
 
 </body>
