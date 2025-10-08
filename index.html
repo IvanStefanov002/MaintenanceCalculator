@@ -65,6 +65,7 @@ function clearData() {
   <form id="addForm" style="display: flex; justify-content: space-between;">
     <select id="part">
       <option value="oil">Масло</option>
+      <option value="oilFilter">Маслен филтър</option>
       <option value="airFilter">Въздушен филтър</option>
       <option value="polenFilter">Поленов филтър</option>
       <option value="fuelFilter">Горивен филтър</option>
@@ -96,6 +97,7 @@ function clearData() {
 <script>
 const defaultData = {
   oil: { lastKm: 0, intervalKm: 10000, notes: '' },
+  oilFilter: { lastKm: 0, intervalKm: 10000, notes: '' },
   airFilter: { lastKm: 0, intervalKm: 20000, notes: '' },
   polenFilter: { lastKm: 0, intervalKm: 20000, notes: '' },
   fuelFilter: { lastKm: 0, intervalKm: 30000, notes: '' },
@@ -107,6 +109,7 @@ let maintenanceData = JSON.parse(localStorage.getItem('maintenanceData')) || def
 function mapKeyword(keyword) {
   const dictionary = {
     oil: "Масло",
+    oilFilter: "Маслен филтър",
     airFilter: "Въздушен филтър",
     polenFilter: "Поленов филтър",
     fuelFilter: "Горивен филтър",
